@@ -6,6 +6,9 @@ const file = fs.readFileSync('./config/swagger.yaml', 'utf8')
 const swaggerDocument = YAML.parse(file)
 const swaggerUi = require("swagger-ui-express");
 
+const peopleRoutes = require('./routes/people')
+const skillsRoutes = require('./routes/skills')
+
 const app: Express = express();
 const port = 8000;
 
@@ -16,13 +19,9 @@ app.use(
 );
 
 app.get('/', (req: Request, res: Response) => res.send('Hello World'));
-
-app.get('/people', (req: Request, res: Response) => res.send('Hello World'));
-
-app.get('/people/:id', (req: Request, res: Response) => res.send('Hello World'));
-
-app.get('/skills', (req: Request, res: Response) => res.send('Hello World'));
+app.use('/people', peopleRoutes);
+app.use('/skills', skillsRoutes);
 
 app.listen(port, () => {
-    console.log('Listening on port ' + port);
+    console.log('Listening on port: ' + port);
 });
