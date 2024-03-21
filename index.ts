@@ -1,15 +1,15 @@
-import express, { Express, Request, Response } from 'express';
-
+const express = require('express');
 const fs = require("fs")
 const YAML = require('yaml')
 const file = fs.readFileSync('./config/swagger.yaml', 'utf8')
 const swaggerDocument = YAML.parse(file)
 const swaggerUi = require("swagger-ui-express");
 
+const statusRoute = require('./routes/status')
 const peopleRoutes = require('./routes/people')
 const skillsRoutes = require('./routes/skills')
 
-const app: Express = express();
+const app = express();
 const port = 8000;
 
 app.use(
@@ -18,7 +18,7 @@ app.use(
     swaggerUi.setup(swaggerDocument, { explorer: true })
 );
 
-app.get('/', (req: Request, res: Response) => res.send('Hello World'));
+app.get('/', statusRoute);
 app.use('/people', peopleRoutes);
 app.use('/skills', skillsRoutes);
 
