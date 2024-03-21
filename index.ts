@@ -19,6 +19,7 @@ app.use(
     swaggerUi.serve,
     swaggerUi.setup(swaggerDocument, { explorer: true })
 );
+app.use(express.json())
 
 app.get('/', statusRoute);
 app.use('/people', peopleRoutes);
