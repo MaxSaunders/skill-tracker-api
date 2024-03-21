@@ -26,3 +26,4 @@ export const getAllPersonSkills = async (personId: string) => {
 // export const addPerson = async (person: Person) => {
 //     return await runQuery(insertPerson(person))
 // }
+// TESTING
