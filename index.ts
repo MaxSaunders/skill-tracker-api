@@ -4,13 +4,15 @@ const YAML = require('yaml')
 const file = fs.readFileSync('./config/swagger.yaml', 'utf8')
 const swaggerDocument = YAML.parse(file)
 const swaggerUi = require("swagger-ui-express");
+const dotenv = require('dotenv');
 
 const statusRoute = require('./routes/status')
 const peopleRoutes = require('./routes/people')
 const skillsRoutes = require('./routes/skills')
 
+dotenv.config();
 const app = express();
-const port = 8000;
+const port = process.env.PORT ?? 8000;
 
 app.use(
     "/skill-tracker",
