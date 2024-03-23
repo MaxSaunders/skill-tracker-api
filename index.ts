@@ -28,3 +28,5 @@ app.use('/skills', skillsRoutes);
 app.listen(port, () => {
     console.log('Listening on port: ' + port);
 });
+
+// https://stackoverflow.com/questions/70819537/why-can-anyone-access-my-api-deployed-on-heroku-and-how-do-i-prevent-it
