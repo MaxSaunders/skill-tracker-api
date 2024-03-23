@@ -1,8 +1,7 @@
-import { Request, Response, response } from 'express';
+import { Request, Response } from 'express';
 import { getAllPeopleDao, getPersonSkills, getAllPersonSkills, getPersonDao, addPersonDao, DaoPerson, updatePersonSkillDao, getPersonSkillDao, updateTopSkillDao } from '../helpers/peopleDao';
 import { Person } from '../types';
 import { v4 as uuid } from 'uuid';
-import { getSkillDao } from '../helpers/skillsDao';
 
 const express = require('express');
 const router = express.Router();
@@ -113,9 +112,9 @@ const updateTopSkill = async (req: Request, res: Response) => {
     try {
         const { id: personId } = req.params
         const { skillId } = req.body
-        console.log({skillId, personId})
 
         await updateTopSkillDao(personId, skillId)
+        res.status(200).send()
     } catch (err) {
         res.status(500)
         res.json({ message: 'Error', error: 'Failed to update person skill -- ' + err })
