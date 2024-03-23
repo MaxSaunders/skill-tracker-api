@@ -1,12 +1,18 @@
-import { Skill } from '../types/skill'
+import { Skill } from '../types'
 
 export const selectAllSkillsQuery = () => `
-    SELECT *
+    SELECT
+        name,
+        skill_id as "id",
+        description
     FROM skills
 `
 
 export const selectSkillQuery = (skillId: string) => `
-    SELECT *
+    SELECT
+        name,
+        skill_id as "id",
+        description
     FROM skills
     WHERE skill_id = '${skillId ?? 0}'
 `

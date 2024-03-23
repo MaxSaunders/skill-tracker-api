@@ -1,4 +1,4 @@
-import { UserSkill } from '../types/person'
+import { Person, UserSkill } from '../types'
 
 export const selectAllPeople = () => `
     SELECT
@@ -25,11 +25,21 @@ export const selectPerson = (personId: string) => `
     WHERE user_id = '${personId}'
 `
 
+export const selectPersonWithAuth = (personId: string) => `
+    SELECT
+        user_id,
+        name,
+        top_skill as top_skill_id,
+        auth0_id as "auth0"
+    FROM users
+    WHERE user_id::text = '${personId}' OR auth0_id = '${personId}'
+`
+
 export const selectPersonSkills = (personId: string) => `
     SELECT
         us.skill_id as id,
         us.rating as rating,
-        us.user_id as userId,
+        us.user_id as "userId",
         s.name as name
     FROM user_skills us
     JOIN skills s
@@ -39,10 +49,13 @@ export const selectPersonSkills = (personId: string) => `
 
 export const selectAllPersonSkills = () => `
     SELECT
-        skill_id as id,
-        rating,
-        user_id
-    FROM user_skills
+        us.skill_id as id,
+        us.rating,
+        us.user_id as "userId",
+        s.name
+    FROM user_skills us
+    JOIN skills s
+    ON us.skill_id = s.skill_id
 `
 
 export const upsertPersonSkill = (personId: string, skill: UserSkill) => `
@@ -52,4 +65,11 @@ export const upsertPersonSkill = (personId: string, skill: UserSkill) => `
         ('${skill.id}', '${personId}', ${skill.rating})
     ON CONFLICT DO
         UPDATE SET rating = ${skill.rating}
+`
+
+export const insertPerson = (person: Person) => `
+    INSERT INTO users
+        (name, user_id, auth0_id)
+    VALUES
+        ('${person.name}', '${person.id}', '${person.auth0}')
 `
