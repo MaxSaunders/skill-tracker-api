@@ -3,8 +3,11 @@ import { selectPerson,
     selectAllPeople,
     selectPersonSkills,
     selectAllPersonSkills,
-    selectPersonWithAuth,
-    insertPerson } from '../queries/people_queries'
+    selectPersonSkill,
+    insertPerson,
+    upsertPersonSkill,
+    updateTopSkill
+} from '../queries/people_queries'
 import { runQuery } from './runQuery'
 
 export interface DaoPerson {
@@ -25,15 +28,15 @@ export const getPersonDao = async (personId: string) => {
     }
 }
 
-export const getPersonAuthDao = async (personId: string) => {
-    try {
-        const result = await runQuery<DaoPerson[]>(selectPersonWithAuth(personId))
-        return result[0]
-        // TODO: possible refactor to not return rows []
-    } catch (err) {
-        throw Error('GET PERSON ERROR\n\n')
-    }
-}
+// export const getPersonAuthDao = async (personId: string) => {
+//     try {
+//         const result = await runQuery<DaoPerson[]>(selectPersonWithAuth(personId))
+//         return result[0]
+//         // TODO: possible refactor to not return rows []
+//     } catch (err) {
+//         throw Error('GET PERSON ERROR\n\n')
+//     }
+// }
 
 export const getAllPeopleDao = async () => {
     try {
@@ -61,4 +64,16 @@ export const getAllPersonSkills = async () => {
 
 export const addPersonDao = async (person: Person) => {
     return await runQuery<void>(insertPerson(person))
+}
+
+export const updatePersonSkillDao = async (userId: string, skillId: string, rating: number) =>{
+    return await runQuery<void>(upsertPersonSkill(userId, skillId, rating))
+}
+
+export const getPersonSkillDao = async (userId: string, skillId: string) => {
+    return await runQuery<UserSkill>(selectPersonSkill(userId, skillId))
+}
+
+export const updateTopSkillDao = async (userId: string, skillId: string) => {
+    return await runQuery<void>(updateTopSkill(userId, skillId))
 }

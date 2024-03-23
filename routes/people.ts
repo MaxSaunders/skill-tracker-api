@@ -1,5 +1,5 @@
 import { Request, Response, response } from 'express';
-import { getAllPeopleDao, getPersonSkills, getAllPersonSkills, getPersonDao, getPersonAuthDao, addPersonDao, DaoPerson } from '../helpers/peopleDao';
+import { getAllPeopleDao, getPersonSkills, getAllPersonSkills, getPersonDao, addPersonDao, DaoPerson, updatePersonSkillDao, getPersonSkillDao, updateTopSkillDao } from '../helpers/peopleDao';
 import { Person } from '../types';
 import { v4 as uuid } from 'uuid';
 import { getSkillDao } from '../helpers/skillsDao';
@@ -40,7 +40,6 @@ const getPeople = async (req: Request, res: Response) => {
 }
 
 const getPerson = async (req: Request, res: Response) => {
-    // Currently only works with userId not AUTH0 sub
     try {
         const { id: personId } = req.params
         const daoPerson = await getPersonDao(personId)
@@ -59,10 +58,10 @@ const getPerson = async (req: Request, res: Response) => {
 }
 
 const getCreatePerson = async (req: Request, res: Response) => {
-    // Built to work with userId and AUTH0 sub
     try {
         const { id: personId } = req.params
-        let daoPerson = await getPersonAuthDao(personId)
+        let daoPerson = await getPersonDao(personId)
+        // let daoPerson = await getPersonAuthDao(personId)
 
         if (!daoPerson) {
             const userId = uuid()
@@ -75,7 +74,7 @@ const getCreatePerson = async (req: Request, res: Response) => {
                 throw Error('No auth0 provided')
             }
             await addPersonDao({ name, auth0, id: userId } as Person)
-            daoPerson = await getPersonAuthDao(auth0)
+            daoPerson = await getPersonDao(auth0)
         }
 
         const { skills, topSkill } = await getPersonSkillsHelper(daoPerson)
@@ -92,8 +91,41 @@ const getCreatePerson = async (req: Request, res: Response) => {
     }
 }
 
+const updatePersonSkill = async (req: Request, res: Response) => {
+    try {
+        const { id: personId } = req.params
+        const { skillId, rating } = req.body
+
+        const daoPerson = await getPersonDao(personId)
+
+        await updatePersonSkillDao(daoPerson.user_id, skillId, rating)
+        // The skill table uses userId so we need to ensure we have the proper userId uuid
+        const personSkill = getPersonSkillDao(personId, skillId)
+
+        res.status(200).send(personSkill)
+    } catch (err) {
+        res.status(500)
+        res.json({ message: 'Error', error: 'Failed to update person skill -- ' + err })
+    }
+}
+
+const updateTopSkill = async (req: Request, res: Response) => {
+    try {
+        const { id: personId } = req.params
+        const { skillId } = req.body
+        console.log({skillId, personId})
+
+        await updateTopSkillDao(personId, skillId)
+    } catch (err) {
+        res.status(500)
+        res.json({ message: 'Error', error: 'Failed to update person skill -- ' + err })
+    }
+}
+
 router.get('/', getPeople);
 router.get('/:id', getPerson);
 router.post('/:id', getCreatePerson);
+router.post('/:id/skill', updatePersonSkill);
+router.post('/:id/topSkill', updateTopSkill);
 
 module.exports = router;
