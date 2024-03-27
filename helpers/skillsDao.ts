@@ -1,23 +1,26 @@
-import { insertSkill, selectAllSkillsQuery, selectSkillQuery } from '../queries/skill_queries'
-import { Skill } from '../types'
-import { runQuery } from './runQuery'
+import { insertSkill, selectAllSkillsQuery, selectSkillQuery } from "../queries/skill_queries"
+import { Skill } from "../types"
+import { runQuery } from "./runQuery"
 
 export interface DaoSkill {
-    name: string,
-    id: string,
+    name: string
+    id: string
     description: string
 }
 
 export const getSkillDao = async (skillId: string) => {
-    const result = await runQuery<DaoSkill[]>(selectSkillQuery(skillId))
+    const { query, params } = selectSkillQuery(skillId)
+    const result = await runQuery<DaoSkill[]>(query, params)
     // TODO: possible refactor to not return rows []
     return result[0]
 }
 
 export const getAllSkillsDao = async () => {
-    return await runQuery<DaoSkill[]>(selectAllSkillsQuery())
+    const { query } = selectAllSkillsQuery()
+    return await runQuery<DaoSkill[]>(query)
 }
 
 export const addSkillDao = async (skill: Skill) => {
-    return await runQuery(insertSkill(skill))
+    const { query, params } = insertSkill(skill)
+    return await runQuery(query, params)
 }

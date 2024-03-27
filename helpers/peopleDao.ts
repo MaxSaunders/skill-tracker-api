@@ -1,30 +1,32 @@
-import { Person, UserSkill } from '../types'
-import { selectPerson,
+import { Person, UserSkill } from "../types"
+import {
+    selectPerson,
     selectAllPeople,
     selectPersonSkills,
     selectAllPersonSkills,
     selectPersonSkill,
     insertPerson,
     upsertPersonSkill,
-    updateTopSkill
-} from '../queries/people_queries'
-import { runQuery } from './runQuery'
+    updateTopSkill,
+} from "../queries/people_queries"
+import { runQuery } from "./runQuery"
 
 export interface DaoPerson {
-    name: string,
-    user_id: string,
-    top_skill_id: string,
-    top_skill_name: string,
-    top_skill_rating: string,
+    name: string
+    user_id: string
+    top_skill_id: string
+    top_skill_name: string
+    top_skill_rating: string
 }
 
 export const getPersonDao = async (personId: string) => {
     try {
-        const result = await runQuery<DaoPerson[]>(selectPerson(personId))
+        const { query, params } = selectPerson(personId)
+        const result = await runQuery<DaoPerson[]>(query, params)
         return result[0]
         // TODO: possible refactor to not return rows []
     } catch (err) {
-        throw Error('GET PERSON ERROR\n\n')
+        throw Error("GET PERSON ERROR\n\n")
     }
 }
 
@@ -40,40 +42,47 @@ export const getPersonDao = async (personId: string) => {
 
 export const getAllPeopleDao = async () => {
     try {
-        return await runQuery<DaoPerson[]>(selectAllPeople())
+        const { query } = selectAllPeople()
+        return await runQuery<DaoPerson[]>(query)
     } catch (err) {
-        throw Error('GET ALL PERSON ERROR\n\n')
+        throw Error("GET ALL PERSON ERROR\n\n")
     }
 }
 
 export const getPersonSkills = async (personId: string) => {
     try {
-        return await runQuery<UserSkill[]>(selectPersonSkills(personId))
+        const { query, params } = selectPersonSkills(personId)
+        return await runQuery<UserSkill[]>(query, params)
     } catch (err) {
-        throw Error('GET ALL PERSON SKILLS ERROR\n\n')
+        throw Error("GET ALL PERSON SKILLS ERROR\n\n")
     }
 }
 
 export const getAllPersonSkills = async () => {
     try {
-        return await runQuery<UserSkill[]>(selectAllPersonSkills())
+        const { query } = selectAllPersonSkills()
+        return await runQuery<UserSkill[]>(query)
     } catch (err) {
-        throw Error('GET ALL PERSON SKILLS ERROR\n\n')
+        throw Error("GET ALL PERSON SKILLS ERROR\n\n")
     }
 }
 
 export const addPersonDao = async (person: Person) => {
-    return await runQuery<void>(insertPerson(person))
+    const { query, params } = insertPerson(person)
+    return await runQuery<void>(query, params)
 }
 
-export const updatePersonSkillDao = async (userId: string, skillId: string, rating: number) =>{
-    return await runQuery<void>(upsertPersonSkill(userId, skillId, rating))
+export const updatePersonSkillDao = async (userId: string, skillId: string, rating: number) => {
+    const { query, params } = upsertPersonSkill(userId, skillId, rating)
+    return await runQuery<void>(query, params)
 }
 
 export const getPersonSkillDao = async (userId: string, skillId: string) => {
-    return await runQuery<UserSkill>(selectPersonSkill(userId, skillId))
+    const { query, params } = selectPersonSkill(userId, skillId)
+    return await runQuery<UserSkill>(query, params)
 }
 
 export const updateTopSkillDao = async (userId: string, skillId: string) => {
-    return await runQuery<void>(updateTopSkill(userId, skillId))
+    const { query, params } = updateTopSkill(userId, skillId)
+    return await runQuery<void>(query, params)
 }

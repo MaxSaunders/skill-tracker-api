@@ -1,7 +1,7 @@
-const { Pool } = require('pg');
-const dotenv = require('dotenv');
+const { Pool } = require("pg")
+const dotenv = require("dotenv")
 
-dotenv.config();
+dotenv.config()
 
 const client = new Pool({
     host: process.env.DB_HOST,
@@ -11,10 +11,9 @@ const client = new Pool({
     password: process.env.DB_PASSWORD,
     ssl: {
         require: true,
-        rejectUnauthorized: false
-    }
+        rejectUnauthorized: false,
+    },
 })
-
 
 export const runQuery = async <T>(query: string, params: Array<any> = []): Promise<T> => {
     // console.log({query})
@@ -22,6 +21,6 @@ export const runQuery = async <T>(query: string, params: Array<any> = []): Promi
         const { rows } = await client.query(query, params)
         return rows
     } catch (error) {
-        throw Error('SQL ERROR: ' + error)
+        throw Error("SQL ERROR: " + error)
     }
 }
