@@ -1,10 +1,10 @@
-import { Request, Response } from 'express';
-import { v4 as uuid } from 'uuid';
-import { addSkillDao, getAllSkillsDao, getSkillDao } from '../helpers/skillsDao';
-import { Skill } from '../types';
+import { Request, Response } from "express"
+import { v4 as uuid } from "uuid"
+import { addSkillDao, getAllSkillsDao, getSkillDao } from "../helpers/skillsDao"
+import { Skill } from "../types"
 
-const express = require('express');
-const router = express.Router();
+const express = require("express")
+const router = express.Router()
 
 const getSkills = async (req: Request, res: Response) => {
     try {
@@ -12,7 +12,7 @@ const getSkills = async (req: Request, res: Response) => {
         res.send(skills)
     } catch (err) {
         res.status(500)
-        res.json({ message: 'Error', error: 'Failed to fetch skills -- ' + err })
+        res.json({ message: "Error", error: "Failed to fetch skills -- " + err })
     }
 }
 
@@ -20,28 +20,27 @@ const getSkill = async (req: Request, res: Response) => {
     try {
         const { id: skillId } = req.params
         const skill = await getSkillDao(skillId)
-        console.log({skill})
         res.send(skill)
     } catch (err) {
         res.status(500)
-        res.json({ message: 'Error', error: 'Failed to fetch skill -- ' + err })
+        res.json({ message: "Error", error: "Failed to fetch skill -- " + err })
     }
 }
 
 const newSkill = async (req: Request, res: Response) => {
     try {
-        const {name, description} = req.body
+        const { name, description } = req.body
         const id = uuid()
         const skill = {
             id,
             name,
-            description
+            description,
         } as Skill
         await addSkillDao(skill)
-        res.status(200).send('Success')
+        res.status(200).send("Success")
     } catch (err) {
         res.status(500)
-        res.json({ message: 'Error', error: 'Failed to insert new skill -- ' + err })
+        res.json({ message: "Error", error: "Failed to insert new skill -- " + err })
     }
 }
 
@@ -62,8 +61,8 @@ const newSkill = async (req: Request, res: Response) => {
 //     }
 // }
 
-router.get('/', getSkills)
-router.get('/:id', getSkill)
-router.post('/new', newSkill)
+router.get("/", getSkills)
+router.get("/:id", getSkill)
+router.post("/new", newSkill)
 
 module.exports = router
