@@ -1,16 +1,27 @@
-import { Request, Response } from 'express';
-import { getAllPeopleDao, getPersonSkills, getAllPersonSkills, getPersonDao, addPersonDao, DaoPerson, updatePersonSkillDao, getPersonSkillDao, updateTopSkillDao } from '../helpers/peopleDao';
-import { Person } from '../types';
-import { v4 as uuid } from 'uuid';
+import { Request, Response } from "express"
+import { v4 as uuid } from "uuid"
+import {
+    getAllPeopleDao,
+    getPersonSkills,
+    getAllPersonSkills,
+    getPersonDao,
+    addPersonDao,
+    DaoPerson,
+    updatePersonSkillDao,
+    getPersonSkillDao,
+    updateTopSkillDao,
+    updatePersonDao,
+} from "../helpers/peopleDao"
+import { Person } from "../types"
 
-const express = require('express');
-const router = express.Router();
+const express = require("express")
+const router = express.Router()
 
 const getPersonSkillsHelper = async (person: DaoPerson) => {
     const { user_id, top_skill_id } = person
 
     const skills = await getPersonSkills(user_id)
-    const topSkill = skills.find(s => s.id == top_skill_id && user_id == s.userId)
+    const topSkill = skills.find((s) => s.id == top_skill_id && user_id == s.userId)
 
     return { skills, topSkill }
 }
@@ -20,21 +31,21 @@ const getPeople = async (req: Request, res: Response) => {
         const people = await getAllPeopleDao()
         const skills = await getAllPersonSkills()
 
-        const fullPeople = people.map(p => {
-            const personSkills = skills.filter(s => s.userId == p.user_id)
-            const topSkill = skills.find(s => s.id == p.top_skill_id && p.user_id == s.userId)
+        const fullPeople = people.map((p) => {
+            const personSkills = skills.filter((s) => s.userId == p.user_id)
+            const topSkill = skills.find((s) => s.id == p.top_skill_id && p.user_id == s.userId)
 
             return {
                 id: p.user_id,
                 name: p.name,
                 skills: personSkills,
-                topSkill
+                topSkill,
             } as Person
         })
         res.status(200).send(fullPeople)
     } catch (err) {
         res.status(500)
-        res.json({ message: 'Error', error: 'Failed to fetch people -- ' + err })
+        res.json({ message: "Error", error: "Failed to fetch people -- " + err })
     }
 }
 
@@ -48,11 +59,32 @@ const getPerson = async (req: Request, res: Response) => {
             name: daoPerson.name,
             id: daoPerson.user_id,
             topSkill,
-            skills: skills
+            skills: skills,
+            email: daoPerson.email,
+            phone: daoPerson.phone,
         } as Person)
     } catch (err) {
         res.status(500)
-        res.json({ message: 'Error', error: 'Failed to fetch person -- ' + err })
+        res.json({ message: "Error", error: "Failed to fetch person -- " + err })
+    }
+}
+
+const updatePerson = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params
+        const daoPerson = await getPersonDao(id)
+        if (!daoPerson) {
+            throw Error("Person not found")
+        }
+
+        const { name, email, phone } = req.body
+        const personObj = { id, name, email, phone } as Person
+        updatePersonDao(personObj)
+
+        res.status(200).send(personObj)
+    } catch (err) {
+        res.status(500)
+        res.json({ message: "Error", error: "Failed to update person -- " + err })
     }
 }
 
@@ -67,10 +99,10 @@ const getCreatePerson = async (req: Request, res: Response) => {
             const { name, auth0 } = req.body
 
             if (!name) {
-                throw Error('No name provided')
+                throw Error("No name provided")
             }
             if (!auth0) {
-                throw Error('No auth0 provided')
+                throw Error("No auth0 provided")
             }
             await addPersonDao({ name, auth0, id: userId } as Person)
             daoPerson = await getPersonDao(auth0)
@@ -82,11 +114,11 @@ const getCreatePerson = async (req: Request, res: Response) => {
             name: daoPerson.name,
             id: daoPerson.user_id,
             topSkill,
-            skills: skills
+            skills: skills,
         } as Person)
     } catch (err) {
         res.status(500)
-        res.json({ message: 'Error', error: 'Failed to fetch person -- ' + err })
+        res.json({ message: "Error", error: "Failed to create person -- " + err })
     }
 }
 
@@ -104,7 +136,7 @@ const updatePersonSkill = async (req: Request, res: Response) => {
         res.status(200).send(personSkill)
     } catch (err) {
         res.status(500)
-        res.json({ message: 'Error', error: 'Failed to update person skill -- ' + err })
+        res.json({ message: "Error", error: "Failed to update person skill -- " + err })
     }
 }
 
@@ -117,14 +149,15 @@ const updateTopSkill = async (req: Request, res: Response) => {
         res.status(200).send()
     } catch (err) {
         res.status(500)
-        res.json({ message: 'Error', error: 'Failed to update person skill -- ' + err })
+        res.json({ message: "Error", error: "Failed to update top skill -- " + err })
     }
 }
 
-router.get('/', getPeople);
-router.get('/:id', getPerson);
-router.post('/:id', getCreatePerson);
-router.post('/:id/skill', updatePersonSkill);
-router.post('/:id/topSkill', updateTopSkill);
+router.get("/", getPeople)
+router.get("/:id", getPerson)
+router.post("/:id", getCreatePerson)
+router.post("/:id/update", updatePerson)
+router.post("/:id/skill", updatePersonSkill)
+router.post("/:id/topSkill", updateTopSkill)
 
-module.exports = router;
+module.exports = router

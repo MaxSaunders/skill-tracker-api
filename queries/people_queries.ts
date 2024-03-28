@@ -8,7 +8,9 @@ export const selectAllPeople = () => {
                 u.user_id,
                 s.skill_id as top_skill_id,
                 s.name as top_skill_name,
-                us.rating as top_skill_rating
+                us.rating as top_skill_rating,
+                u.phone,
+                u.email
             FROM users u
             LEFT JOIN skills s
                 ON s.skill_id = u.top_skill
@@ -28,11 +30,28 @@ export const selectPerson = (personId: string) => {
                 user_id,
                 name,
                 top_skill as top_skill_id,
-                auth0_id as "auth0"
+                auth0_id as "auth0",
+                email,
+                phone
             FROM users
             WHERE user_id::text = $1::text OR auth0_id = $2
         `,
         params: [personId, personId],
+    }
+}
+
+export const updatePerson = (person: Person) => {
+    return {
+        query: `
+            UPDATE users
+            SET
+                name = $1,
+                email = $2,
+                phone = $3
+            WHERE
+                user_id::text = $4::text OR auth0_id::text = $5::text
+        `,
+        params: [person.name, person.email, person.phone, person.id, person.id],
     }
 }
 

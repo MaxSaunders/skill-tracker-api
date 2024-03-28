@@ -40,7 +40,7 @@ const newSkill = async (req: Request, res: Response) => {
         res.status(200).send("Success")
     } catch (err) {
         res.status(500)
-        res.json({ message: "Error", error: "Failed to insert new skill -- " + err })
+        res.json({ message: "Error", error: "Failed to create new skill -- " + err })
     }
 }
 

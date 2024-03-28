@@ -16,11 +16,12 @@ const client = new Pool({
 })
 
 export const runQuery = async <T>(query: string, params: Array<any> = []): Promise<T> => {
-    // console.log({query})
+    // console.log({ query, params })
     try {
         const { rows } = await client.query(query, params)
         return rows
     } catch (error) {
+        // console.log(error)
         throw Error("SQL ERROR: " + error)
     }
 }
