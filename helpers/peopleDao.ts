@@ -8,6 +8,7 @@ import {
     insertPerson,
     upsertPersonSkill,
     updateTopSkill,
+    updatePerson,
 } from "../queries/people_queries"
 import { runQuery } from "./runQuery"
 
@@ -17,6 +18,8 @@ export interface DaoPerson {
     top_skill_id: string
     top_skill_name: string
     top_skill_rating: string
+    email: string
+    phone: string
 }
 
 export const getPersonDao = async (personId: string) => {
@@ -24,9 +27,17 @@ export const getPersonDao = async (personId: string) => {
         const { query, params } = selectPerson(personId)
         const result = await runQuery<DaoPerson[]>(query, params)
         return result[0]
-        // TODO: possible refactor to not return rows []
     } catch (err) {
         throw Error("GET PERSON ERROR\n\n")
+    }
+}
+
+export const updatePersonDao = async (person: Person) => {
+    try {
+        const { query, params } = updatePerson(person)
+        return await runQuery<void>(query, params)
+    } catch (err) {
+        throw Error("UPDATE PERSON ERROR\n\n")
     }
 }
 

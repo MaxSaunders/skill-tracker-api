@@ -1,12 +1,12 @@
-import { Request, Response } from 'express';
+import { Request, Response } from "express"
 
-const express = require('express');
-const router = express.Router();
+const express = require("express")
+const router = express.Router()
 
 const getStatus = (req: Request, res: Response) => {
-    res.send('SkillTracker v1 - status check')
+    res.send("SkillTracker v1 - Online")
 }
 
-router.get('/', getStatus);
+router.get("/", getStatus)
 
-module.exports = router;
+module.exports = router
